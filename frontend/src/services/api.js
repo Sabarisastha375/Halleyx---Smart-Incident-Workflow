@@ -49,6 +49,7 @@ export const stepApi = {
   delete: (id) => api.delete(`/steps/${id}`),
   setStart: (workflowId, startStepId) =>
     api.put(`/workflows/${workflowId}/steps/start`, { startStepId }),
+  reorder: (steps) => api.put('/steps/reorder', { steps }),
 };
 
 // ─── Rules ───────────────────────────────────────────────────────────────────
@@ -57,6 +58,7 @@ export const ruleApi = {
   create: (stepId, data) => api.post(`/steps/${stepId}/rules`, data),
   update: (id, data) => api.put(`/rules/${id}`, data),
   delete: (id) => api.delete(`/rules/${id}`),
+  reorder: (rules) => api.put('/rules/reorder', { rules }),
 };
 
 // ─── Executions ──────────────────────────────────────────────────────────────

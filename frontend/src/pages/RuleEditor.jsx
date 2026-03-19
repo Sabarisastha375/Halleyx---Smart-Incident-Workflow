@@ -34,9 +34,9 @@ function SortableRule({ rule, steps, onUpdate, onDelete }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`p-4 rounded-lg border transition-colors ${
+      className={`p-4 rounded-lg border transition-all sortable-list-item ${
         isDragging
-          ? 'border-primary-500 bg-primary-600/10'
+          ? 'border-primary-500 bg-primary-600/10 dragging-item'
           : 'border-surface-border bg-surface hover:border-slate-500'
       }`}
     >
@@ -45,15 +45,11 @@ function SortableRule({ rule, steps, onUpdate, onDelete }) {
         <button
           {...attributes}
           {...listeners}
-          className="mt-1 text-slate-600 hover:text-slate-400 cursor-grab active:cursor-grabbing"
+          className="mt-1 text-slate-500 hover:text-primary-400 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-surface-hover transition-colors"
+          title="Drag to reorder"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <circle cx="7" cy="6" r="1.5" />
-            <circle cx="13" cy="6" r="1.5" />
-            <circle cx="7" cy="10" r="1.5" />
-            <circle cx="13" cy="10" r="1.5" />
-            <circle cx="7" cy="14" r="1.5" />
-            <circle cx="13" cy="14" r="1.5" />
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
           </svg>
         </button>
 
@@ -214,9 +210,14 @@ export default function RuleEditor() {
     const updated = reordered.map((r, i) => ({ ...r, priority: i + 1 }));
     setRules(updated);
 
-    // Persist priority changes
-    await Promise.all(updated.map((r) => ruleApi.update(r._id, { priority: r.priority })));
-    toast.success('Rule order saved');
+    try {
+      // Persist priority changes in bulk
+      await ruleApi.reorder(updated.map((r) => ({ id: r._id, priority: r.priority })));
+      toast.success('Rule order saved');
+    } catch (err) {
+      toast.error('Failed to save order: ' + err.message);
+      // Rollback on error if necessary, but for now we just show error
+    }
   };
 
   if (loading) {

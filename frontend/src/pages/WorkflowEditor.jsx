@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { workflowApi, stepApi } from '../services/api';
 
 const STEP_TYPES = ['task', 'approval', 'notification'];
@@ -10,6 +26,67 @@ const stepTypeColors = {
   approval: 'badge-yellow',
   notification: 'badge-purple',
 };
+
+// ─── Sortable Step Item ─────────────────────────────────────────────────────
+function SortableStepItem({ step, index, onSetStart, onDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: step._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-3 p-3 rounded-lg border transition-all sortable-list-item ${
+        isDragging
+          ? 'border-primary-500 bg-primary-600/10 shadow-lg dragging-item'
+          : 'bg-surface border-surface-border hover:border-slate-500'
+      }`}
+    >
+      {/* Drag handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="text-slate-500 hover:text-primary-400 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-surface-hover transition-colors"
+        title="Drag to reorder"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+        </svg>
+      </button>
+
+      <span className="w-7 h-7 flex-shrink-0 rounded-full bg-primary-600/20 text-primary-400 text-xs font-bold flex items-center justify-center">
+        {index + 1}
+      </span>
+
+      <div className="flex-1">
+        <p className="text-sm font-medium text-white">{step.name}</p>
+        <span className={stepTypeColors[step.stepType]}>{step.stepType}</span>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onSetStart(step._id)}
+          className="btn-secondary text-xs py-1 px-2"
+          title="Set as start step"
+        >
+          ▶ Start
+        </button>
+        <button
+          onClick={() => onDelete(step._id)}
+          className="btn-danger text-xs py-1 px-2"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const DEFAULT_SCHEMA = {
   incident_type: { type: 'string', required: true },
@@ -38,6 +115,11 @@ export default function WorkflowEditor() {
 
   // New step form
   const [newStep, setNewStep] = useState({ name: '', stepType: 'task', order: 1 });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   useEffect(() => {
     if (!isEdit) return;
@@ -126,6 +208,27 @@ export default function WorkflowEditor() {
       toast.success('Start step updated');
     } catch (err) {
       toast.error(err.message);
+    }
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = steps.findIndex((s) => s._id === active.id);
+    const newIndex = steps.findIndex((s) => s._id === over.id);
+    const reordered = arrayMove(steps, oldIndex, newIndex);
+
+    // Update order locally
+    const updated = reordered.map((s, i) => ({ ...s, order: i + 1 }));
+    setSteps(updated);
+
+    try {
+      // Persist in bulk
+      await stepApi.reorder(updated.map((s) => ({ id: s._id, order: s.order })));
+      toast.success('Step order saved');
+    } catch (err) {
+      toast.error('Failed to save order: ' + err.message);
     }
   };
 
@@ -238,35 +341,28 @@ export default function WorkflowEditor() {
                 No steps yet. Add your first step below.
               </p>
             ) : (
-              steps.map((step, idx) => (
-                <div
-                  key={step._id}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-surface border border-surface-border hover:border-slate-500 transition-colors"
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={steps.map((s) => s._id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  <span className="w-7 h-7 flex-shrink-0 rounded-full bg-primary-600/20 text-primary-400 text-xs font-bold flex items-center justify-center">
-                    {idx + 1}
-                  </span>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-white">{step.name}</p>
-                    <span className={stepTypeColors[step.stepType]}>{step.stepType}</span>
+                  <div className="space-y-3">
+                    {steps.map((step, idx) => (
+                      <SortableStepItem
+                        key={step._id}
+                        step={step}
+                        index={idx}
+                        onSetStart={handleSetStartStep}
+                        onDelete={handleDeleteStep}
+                      />
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleSetStartStep(step._id)}
-                      className="btn-secondary text-xs py-1 px-2"
-                      title="Set as start step"
-                    >
-                      ▶ Start
-                    </button>
-                    <button
-                      onClick={() => handleDeleteStep(step._id)}
-                      className="btn-danger text-xs py-1 px-2"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))
+                </SortableContext>
+              </DndContext>
             )}
           </div>
 

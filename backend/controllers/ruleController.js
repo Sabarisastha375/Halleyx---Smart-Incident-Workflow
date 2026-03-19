@@ -71,4 +71,31 @@ const deleteRule = async (req, res, next) => {
   }
 };
 
-module.exports = { createRule, getRules, updateRule, deleteRule };
+/**
+ * @route   PUT /api/rules/reorder
+ */
+const reorderRules = async (req, res, next) => {
+  try {
+    const { rules } = req.body; // Array of { id, priority }
+
+    if (!Array.isArray(rules)) {
+      res.status(400);
+      throw new Error('Invalid rules data');
+    }
+
+    const operations = rules.map((r) => ({
+      updateOne: {
+        filter: { _id: r.id },
+        update: { $set: { priority: r.priority } },
+      },
+    }));
+
+    await Rule.bulkWrite(operations);
+
+    res.json({ success: true, message: 'Rules reordered successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createRule, getRules, updateRule, deleteRule, reorderRules };

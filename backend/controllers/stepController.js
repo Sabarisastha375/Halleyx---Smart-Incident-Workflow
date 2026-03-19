@@ -107,4 +107,31 @@ const setStartStep = async (req, res, next) => {
   }
 };
 
-module.exports = { createStep, getSteps, updateStep, deleteStep, setStartStep };
+/**
+ * @route   PUT /api/steps/reorder
+ */
+const reorderSteps = async (req, res, next) => {
+  try {
+    const { steps } = req.body; // Array of { id, order }
+
+    if (!Array.isArray(steps)) {
+      res.status(400);
+      throw new Error('Invalid steps data');
+    }
+
+    const operations = steps.map((s) => ({
+      updateOne: {
+        filter: { _id: s.id },
+        update: { $set: { order: s.order } },
+      },
+    }));
+
+    await Step.bulkWrite(operations);
+
+    res.json({ success: true, message: 'Steps reordered successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createStep, getSteps, updateStep, deleteStep, setStartStep, reorderSteps };
