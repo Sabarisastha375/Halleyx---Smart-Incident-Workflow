@@ -44,7 +44,7 @@ smart-incident-workflow/
 
 | Layer       | Technology                        |
 |-------------|-----------------------------------|
-| Frontend    | React 18, Vite, Tailwind CSS, Axios |
+| Frontend    | React 18, Vite, Tailwind CSS      |
 | Backend     | Node.js, Express.js               |
 | Database    | MongoDB, Mongoose                 |
 | DnD         | @dnd-kit (rule priority ordering) |
