@@ -2,7 +2,6 @@
 A **production-ready full-stack application** that automates how organizations respond to technical incidents. Define workflows, configure rule-based transitions, execute workflows, and track every step in real time.
 
 ---
-
 ## 🏗️ Architecture
 
 ```
