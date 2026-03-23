@@ -51,9 +51,12 @@ smart-incident-workflow/
 
 ---
 
-## 🎥 Project Demo
+##### 🎥 Project Demo
 
-[![Watch Demo](https://i.vimeocdn.com/video/VIDEO_ID_640.jpg)](https://vimeo.com/1176116456)
+https://github.com/Sabarisastha375/Halleyx---Smart-Incident-Workflow/issues/2
+
+
+
 
 ## 🚀 Setup
 
@@ -189,7 +192,6 @@ Incident Resolution (task) ← terminal
   "reported_by": "john.doe"
 }
 ```
-https://github.com/Sabarisastha375/Halleyx---Smart-Incident-Workflow/issues/2
 ### Expected Path
 `Incident Logged → Severity Analysis → Manager Escalation → DevOps Notification → Incident Resolution`
 
