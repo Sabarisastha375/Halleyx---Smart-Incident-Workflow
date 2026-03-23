@@ -185,7 +185,7 @@ Incident Resolution (task) ← terminal
   "reported_by": "john.doe"
 }
 ```
-
+https://github.com/Sabarisastha375/Halleyx---Smart-Incident-Workflow/issues/2
 ### Expected Path
 `Incident Logged → Severity Analysis → Manager Escalation → DevOps Notification → Incident Resolution`
 
