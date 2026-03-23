@@ -1,5 +1,8 @@
+Smart Incident Workflow
 
-A **production-ready full-stack application** that automates how organizations respond to technical incidents. Define workflows, configure rule-based transitions, execute workflows, and track every step in real time.
+
+
+A production-ready full-stack application that leverages AI to automatically generate incident response workflows. It allows users to create, edit, and manage workflows by adding or deleting steps, defining rule-based transitions, and monitoring executions through an interactive dashboard.
 
 ---
 ## 🏗️ Architecture
@@ -50,10 +53,11 @@ smart-incident-workflow/
 ---
 
 ##### 🎥 Project Demo Video
-https://youtu.be/Eoq01DIjG1c?si=Reuc7OfivXs8QvFG]
+
+Watch on Youtube  : https://youtu.be/Eoq01DIjG1c?si=Reuc7OfivXs8QvFG
 
 
-(https://drive.google.com/file/d/1ap1BuHbnhSKEn6HwshOL68oV_z8ONUUf/view?usp=sharing)
+Demo Video Google Drive : (https://drive.google.com/file/d/1ap1BuHbnhSKEn6HwshOL68oV_z8ONUUf/view?usp=sharing)
 
 
 
@@ -88,7 +92,6 @@ npm install
 npm run dev                   # starts on http://localhost:3000
 ```
 
-Open **http://localhost:3000** in your browser.
 
 ---
 
