@@ -1,4 +1,4 @@
-https://github.com/Sabarisastha375/Halleyx---Smart-Incident-Workflow/issues/3# Smart Incident Response Workflow System
+
 
 A **production-ready full-stack application** that automates how organizations respond to technical incidents. Define workflows, configure rule-based transitions, execute workflows, and track every step in real time.
 
@@ -50,6 +50,10 @@ smart-incident-workflow/
 | DnD         | @dnd-kit (rule priority ordering) |
 
 ---
+
+## 🎥 Project Demo
+
+[![Watch Demo](https://i.vimeocdn.com/video/VIDEO_ID_640.jpg)](https://vimeo.com/1176116456)
 
 ## 🚀 Setup
 
