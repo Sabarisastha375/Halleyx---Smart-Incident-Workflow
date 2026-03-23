@@ -52,7 +52,7 @@ smart-incident-workflow/
 
 ##### 🎥 Project Demo
 
-https://github.com/Sabarisastha375/Halleyx---Smart-Incident-Workflow/issues/demo
+https://github.com/Sabarisastha375/Halleyx---Smart-Incident-Workflow/issues/2
 
 
 
